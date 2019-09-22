@@ -18,12 +18,12 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	*/
 	
 	vector3 bottomRight;
-	vector3 topLeft;
+	glm::vec3 topLeft;
 
-	bottomRight = vector3(cos(2 * PI / a_nSubdivisions), sin(2 * PI / a_nSubdivisions), 0);
-	for (int i = 0; i < a_nSubdivisions; i++)
+	bottomRight = vector3(1, 0, 0);
+	for (int i = 0; i <= a_nSubdivisions; i++)
 	{
-		topLeft = vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), 0);
+		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), 0);
 		AddTri(vector3(0,0,0), bottomRight, topLeft);
 		bottomRight = topLeft;
 	}

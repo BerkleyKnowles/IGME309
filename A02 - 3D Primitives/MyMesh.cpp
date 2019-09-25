@@ -1,4 +1,5 @@
 #include "MyMesh.h"
+//Berkley Knowles
 void MyMesh::Init(void)
 {
 	m_bBinded = false;
@@ -276,8 +277,28 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	glm::vec3 bottomRight;
+	glm::vec3 topLeft;
+	glm::vec3 point = vector3(0,a_fHeight, 0);
+
+	//circle on bottom
+	bottomRight = vector3(a_fRadius*1, 0, 0);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+		AddTri(vector3(0, 0, 0), bottomRight, topLeft);
+		bottomRight = topLeft;
+	}
+	//triangles going to point
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+		AddTri(bottomRight, point, topLeft);
+		bottomRight = topLeft;
+	}
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -300,8 +321,35 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	glm::vec3 bottomRight;
+	glm::vec3 topLeft;
+
+	//bottom circle
+	glm::vec3 bottomLeft;
+	bottomRight = vector3(a_fRadius*1, 0, 0);
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+		AddTri(vector3(0, 0, 0), bottomRight, topLeft);
+		bottomLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), a_fHeight, sin(2 * PI * i / a_nSubdivisions));
+		AddTri(topLeft, bottomRight, bottomLeft);
+		bottomRight = topLeft;
+	}
+
+	//top circle
+	bottomRight = vector3(a_fRadius * 1, a_fRadius * a_fHeight, 0);
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), a_fHeight, sin(2 * PI * i / a_nSubdivisions));
+		AddTri(bottomRight, vector3(0, a_fHeight*a_fRadius, 0), topLeft);
+		bottomLeft = a_fRadius * vector3(cos(2 * PI * (i-1) / a_nSubdivisions), 0, sin(2 * PI * (i-1) / a_nSubdivisions));
+		AddTri(topLeft, bottomLeft,bottomRight);
+		bottomRight = topLeft;
+	}
+
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -330,8 +378,80 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
 	// -------------------------------
+
+	glm::vec3 bottomRight;
+	glm::vec3 topLeft;
+	glm::vec3 bottomLeft;
+
+	//top circle and outerwall~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	bottomRight = vector3(a_fOuterRadius * 1, a_fHeight, 0);
+	bottomLeft = vector3(a_fInnerRadius * 1, a_fHeight, 0);
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		//circle
+		topLeft = vector3(a_fOuterRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fOuterRadius * sin(2 * PI * i / a_nSubdivisions));
+		AddTri(bottomRight, bottomLeft, topLeft);
+
+		//outerwall
+		bottomLeft = a_fOuterRadius * vector3(cos(2 * PI * (i-1) / a_nSubdivisions), 0, sin(2 * PI * (i-1) / a_nSubdivisions));
+		AddTri(bottomLeft, bottomRight, topLeft);
+		bottomRight = topLeft;
+		bottomLeft = vector3(a_fInnerRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fInnerRadius * sin(2 * PI * i / a_nSubdivisions));
+	}
+
+	//top circle and innerwall~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	bottomRight = vector3(a_fInnerRadius * 1, a_fHeight, 0);
+
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		//circle
+		bottomLeft = vector3(a_fInnerRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fInnerRadius * sin(2 * PI * i / a_nSubdivisions));
+		topLeft = vector3(a_fOuterRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fOuterRadius * sin(2 * PI * i / a_nSubdivisions));
+		AddTri(bottomRight, bottomLeft, topLeft);
+
+		//innerwall
+		topLeft = vector3(a_fInnerRadius * cos(2 * PI * (i-1) / a_nSubdivisions), 0, a_fInnerRadius * sin(2 * PI * (i-1) / a_nSubdivisions));
+		AddTri(bottomLeft, bottomRight, topLeft);
+		topLeft = vector3(a_fInnerRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fInnerRadius * sin(2 * PI * i / a_nSubdivisions));
+		bottomRight = bottomLeft;
+	}
+	//bottom circle and outerwall~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	bottomRight = vector3(a_fOuterRadius*1, 0, 0);
+	bottomLeft = vector3(a_fInnerRadius*1, 0, 0);
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		//circle
+		topLeft = a_fOuterRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+		AddTri(bottomLeft, bottomRight, topLeft);
+		
+		//outerwall
+		bottomLeft = vector3(a_fOuterRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fOuterRadius * sin(2 * PI * i / a_nSubdivisions));
+		AddTri(topLeft, bottomRight, bottomLeft);
+		bottomRight = topLeft;
+		bottomLeft = a_fInnerRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+	}
+
+	//bottom circle and innerwall~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	bottomRight = vector3(a_fInnerRadius * 1, 0, 0);
+	
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		//circle
+		bottomLeft = a_fInnerRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+		topLeft = a_fOuterRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+		AddTri(bottomLeft, bottomRight, topLeft);
+
+		//innerwall
+		topLeft = vector3(a_fInnerRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fInnerRadius * sin(2 * PI * i / a_nSubdivisions));
+		AddTri(bottomRight, bottomLeft, topLeft);
+		bottomLeft = a_fInnerRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
+		bottomRight = bottomLeft;
+	}
+
+
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);

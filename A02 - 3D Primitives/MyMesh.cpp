@@ -284,7 +284,7 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	glm::vec3 point = vector3(0,a_fHeight, 0);
 
 	//circle on bottom
-	bottomRight = vector3(a_fRadius*1, 0, 0);
+	bottomRight = vector3(a_fRadius, 0, 0);
 	for (int i = 0; i <= a_nSubdivisions; i++)
 	{
 		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), 0, sin(2 * PI * i / a_nSubdivisions));
@@ -491,6 +491,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 }
 void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
+
 	if (a_fRadius < 0.01f)
 		a_fRadius = 0.01f;
 
@@ -509,57 +510,42 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	// Replace this with your code
 	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
-	glm::vec3 bottomRight = vector3(0, 0, -a_fRadius);
-	glm::vec3 topLeft = vector3(0, 0, a_fRadius);
-	glm::vec3 bottomLeft = vector3(0, 0, 0);
-	float y;
-	float xz;
-	float sectorStep = 2 * PI / a_nSubdivisions;
-	float stackStep = PI / a_nSubdivisions;
-	float sectorAngle, stackAngle;
-
-	//other size of shpere
-	
-	bottomLeft = a_fRadius * vector3(cos(2 * PI * 0 / a_nSubdivisions), sin(2 * PI * 0 / a_nSubdivisions), -a_fRadius + a_fRadius / a_nSubdivisions);
-	for (int i = 0; i <= a_nSubdivisions; i++)
-	{
-		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), -a_fRadius + a_fRadius / a_nSubdivisions);
-		AddTri(bottomLeft, bottomRight, topLeft);
-		bottomLeft = topLeft;
-	}
-	bottomRight = vector3(0, 0, a_fRadius);
-	//side of sphere
-	bottomLeft = a_fRadius * vector3(cos(2 * PI * 0 / a_nSubdivisions), sin(2 * PI * 0 / a_nSubdivisions), a_fRadius - a_fRadius/a_nSubdivisions);
-	for (int i = 0; i <= a_nSubdivisions; i++)
-	{
-		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), a_fRadius - a_fRadius / a_nSubdivisions);
-		AddTri(bottomRight, bottomLeft, topLeft);
-		bottomLeft = topLeft;
-	}
+	glm::vec3 bottom = vector3(0, 0, -a_fRadius);
+	glm::vec3 top = vector3(0, 0, 0);
+	std::vector<std::vector<vector3> > Points; //2D vector array to hold vector3 for x,y,z coords
 
 
-	//sections
-	for (int i = 1; i <= a_nSubdivisions; i++)
+	//calculates and puts the x,y,z points into the 2D array
+	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		for (size_t j = 1; j < a_nSubdivisions; j++)
+		Points.push_back(std::vector<vector3>());
+		double theta = i * PI / a_nSubdivisions;
+		for (int j = -a_nSubdivisions; j < a_nSubdivisions; j++)
 		{
-			bottomRight = bottomLeft;
-			bottomLeft = topLeft;
-			topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), a_fRadius - i * a_fRadius / a_nSubdivisions);
-		//	bottomLeft = a_fRadius * vector3(cos(2 * PI * (i-1) / a_nSubdivisions), sin(2 * PI * (i-1) / a_nSubdivisions), a_fRadius - i * a_fRadius / a_nSubdivisions);
-			AddTri(bottomLeft, bottomRight, topLeft);
-			bottomLeft = topLeft;
-			//bottomLeft = topLeft;
+			Points[i].push_back(top);
+			double phi = j * 2 * PI / a_nSubdivisions;
+			Points[i][j+a_nSubdivisions].x = a_fRadius * sin(theta) * cos(phi);
+			Points[i][j + a_nSubdivisions].y = a_fRadius * sin(theta) * sin(phi);
+			Points[i][j + a_nSubdivisions].z = a_fRadius * cos(theta);
 		}
-
 	}
 
-		//topLeft = a_fRadius * vector3(xz * cos(sectorAngle), sin(sectorAngle), xz * sin(sectorAngle));
+	//creates the sphere
+	for (unsigned int i = 1; i < a_nSubdivisions; i++)
+	{
+		for (int j = 0; j <= a_nSubdivisions+1; j++)
+		{
+			AddTri(Points[i][j], Points[i][j + 1], Points[i - 1][j]);
+			AddTri(Points[i][j + 1], Points[i - 1][j + 1], Points[i - 1][j]);
+			
+			//makes the bottom end
+			if (i == a_nSubdivisions - 1)
+			{
+				AddTri(Points[i][j + 1], Points[i][j], bottom);
+			}
+		}
+	}
 
-
-
-
-//	}
 
 
 	// Adding information about color

@@ -344,7 +344,7 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	{
 		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), a_fHeight, sin(2 * PI * i / a_nSubdivisions));
 		AddTri(bottomRight, vector3(0, a_fHeight*a_fRadius, 0), topLeft);
-		bottomLeft = a_fRadius * vector3(cos(2 * PI * (i-1) / a_nSubdivisions), 0, sin(2 * PI * (i-1) / a_nSubdivisions));
+		bottomLeft = a_fRadius * vector3(cos(2 * PI * (i-1.0) / a_nSubdivisions), 0, sin(2 * PI * (i-1.0) / a_nSubdivisions));
 		AddTri(topLeft, bottomLeft,bottomRight);
 		bottomRight = topLeft;
 	}
@@ -395,7 +395,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 		AddTri(bottomRight, bottomLeft, topLeft);
 
 		//outerwall
-		bottomLeft = a_fOuterRadius * vector3(cos(2 * PI * (i-1) / a_nSubdivisions), 0, sin(2 * PI * (i-1) / a_nSubdivisions));
+		bottomLeft = a_fOuterRadius * vector3(cos(2 * PI * (i-1.0) / a_nSubdivisions), 0, sin(2 * PI * (i-1.0) / a_nSubdivisions));
 		AddTri(bottomLeft, bottomRight, topLeft);
 		bottomRight = topLeft;
 		bottomLeft = vector3(a_fInnerRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fInnerRadius * sin(2 * PI * i / a_nSubdivisions));
@@ -412,7 +412,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 		AddTri(bottomRight, bottomLeft, topLeft);
 
 		//innerwall
-		topLeft = vector3(a_fInnerRadius * cos(2 * PI * (i-1) / a_nSubdivisions), 0, a_fInnerRadius * sin(2 * PI * (i-1) / a_nSubdivisions));
+		topLeft = vector3(a_fInnerRadius * cos(2 * PI * (i-1.0) / a_nSubdivisions), 0, a_fInnerRadius * sin(2 * PI * (i-1.0) / a_nSubdivisions));
 		AddTri(bottomLeft, bottomRight, topLeft);
 		topLeft = vector3(a_fInnerRadius * cos(2 * PI * i / a_nSubdivisions), a_fHeight, a_fInnerRadius * sin(2 * PI * i / a_nSubdivisions));
 		bottomRight = bottomLeft;
@@ -507,8 +507,33 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	glm::vec3 bottomRight = vector3(1*a_fRadius, 0, 0);
+	glm::vec3 topLeft;
+	glm::vec3 bottomLeft;
+	float y;
+	float xz;
+	float a_fStep = 2 * PI / a_nSubdivisions;
+	float a_ifAngle;
+	float a_jfAngle;
+
+	for (int i = 1; i <= a_nSubdivisions; i++)
+	{
+		a_ifAngle = (PI / 2.0) - (i * (PI / a_nSubdivisions));
+		xz = a_fRadius * cos(a_ifAngle);
+		y = a_fRadius * sin(a_ifAngle);
+
+		for (int j = 1; j <= a_nSubdivisions; j++)
+		{
+			a_jfAngle = j * a_fStep;
+			topLeft = a_fRadius * vector3(xz * cos(a_jfAngle), y, xz * sin(a_jfAngle));
+			bottomLeft = a_fRadius * vector3(xz * cos((j - 1.0) * a_fStep)), y, xz* sin((j - 1.0) * a_fStep);
+			AddTri(bottomLeft, bottomRight, topLeft);
+			bottomRight = topLeft;
+		}
+	}
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);

@@ -509,30 +509,57 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	// Replace this with your code
 	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
-	glm::vec3 bottomRight = vector3(1*a_fRadius, 0, 0);
-	glm::vec3 topLeft;
-	glm::vec3 bottomLeft;
+	glm::vec3 bottomRight = vector3(0, 0, -a_fRadius);
+	glm::vec3 topLeft = vector3(0, 0, a_fRadius);
+	glm::vec3 bottomLeft = vector3(0, 0, 0);
 	float y;
 	float xz;
-	float a_fStep = 2 * PI / a_nSubdivisions;
-	float a_ifAngle;
-	float a_jfAngle;
+	float sectorStep = 2 * PI / a_nSubdivisions;
+	float stackStep = PI / a_nSubdivisions;
+	float sectorAngle, stackAngle;
 
+	//other size of shpere
+	
+	bottomLeft = a_fRadius * vector3(cos(2 * PI * 0 / a_nSubdivisions), sin(2 * PI * 0 / a_nSubdivisions), -a_fRadius + a_fRadius / a_nSubdivisions);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), -a_fRadius + a_fRadius / a_nSubdivisions);
+		AddTri(bottomLeft, bottomRight, topLeft);
+		bottomLeft = topLeft;
+	}
+	bottomRight = vector3(0, 0, a_fRadius);
+	//side of sphere
+	bottomLeft = a_fRadius * vector3(cos(2 * PI * 0 / a_nSubdivisions), sin(2 * PI * 0 / a_nSubdivisions), a_fRadius - a_fRadius/a_nSubdivisions);
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), a_fRadius - a_fRadius / a_nSubdivisions);
+		AddTri(bottomRight, bottomLeft, topLeft);
+		bottomLeft = topLeft;
+	}
+
+
+	//sections
 	for (int i = 1; i <= a_nSubdivisions; i++)
 	{
-		a_ifAngle = (PI / 2.0) - (i * (PI / a_nSubdivisions));
-		xz = a_fRadius * cos(a_ifAngle);
-		y = a_fRadius * sin(a_ifAngle);
-
-		for (int j = 1; j <= a_nSubdivisions; j++)
+		for (size_t j = 1; j < a_nSubdivisions; j++)
 		{
-			a_jfAngle = j * a_fStep;
-			topLeft = a_fRadius * vector3(xz * cos(a_jfAngle), y, xz * sin(a_jfAngle));
-			bottomLeft = a_fRadius * vector3(xz * cos((j - 1.0) * a_fStep)), y, xz* sin((j - 1.0) * a_fStep);
+			bottomRight = bottomLeft;
+			bottomLeft = topLeft;
+			topLeft = a_fRadius * vector3(cos(2 * PI * i / a_nSubdivisions), sin(2 * PI * i / a_nSubdivisions), a_fRadius - i * a_fRadius / a_nSubdivisions);
+		//	bottomLeft = a_fRadius * vector3(cos(2 * PI * (i-1) / a_nSubdivisions), sin(2 * PI * (i-1) / a_nSubdivisions), a_fRadius - i * a_fRadius / a_nSubdivisions);
 			AddTri(bottomLeft, bottomRight, topLeft);
-			bottomRight = topLeft;
+			bottomLeft = topLeft;
+			//bottomLeft = topLeft;
 		}
+
 	}
+
+		//topLeft = a_fRadius * vector3(xz * cos(sectorAngle), sin(sectorAngle), xz * sin(sectorAngle));
+
+
+
+
+//	}
 
 
 	// Adding information about color

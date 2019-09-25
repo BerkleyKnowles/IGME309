@@ -83,7 +83,7 @@ CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=/debug /INCREMENTAL
 CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
 
 //No help, variable specified on the command line.
-CMAKE_INSTALL_PREFIX:PATH=D:/Profiles/bnk5901/Source/Repos/IGME309/include/glm/out/install/x64-Debug
+CMAKE_INSTALL_PREFIX:PATH=d:/profiles/bnk5901/source/repos/igme309/include/glm/out/install/x64-Debug
 
 //Path to a program.
 CMAKE_LINKER:FILEPATH=C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.21.27702/bin/Hostx64/x64/link.exe

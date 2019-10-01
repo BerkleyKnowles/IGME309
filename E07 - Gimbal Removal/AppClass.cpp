@@ -14,8 +14,20 @@ void Application::Update(void)
 	//Is the arcball active?
 	ArcBall();
 
+	
+
 	//Is the first person camera active?
 	CameraRotation();
+
+
+	//m_m4Model = glm::toMat4(m_qArcBall);
+	matrix4 quatX = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.x), vector3(1.0f, 0.0f, 0.0f));
+	matrix4 quatY = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.y), vector3(0.0f, 1.0f, 0.0f));
+	matrix4 quatZ = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.z), vector3(0.0f, 0.0f, 1.0f));
+
+	matrix4 m_4Orientation = quatX * quatY * quatZ;
+
+	m_m4Model = m_4Orientation;
 }
 void Application::Display(void)
 {
@@ -25,13 +37,16 @@ void Application::Display(void)
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 
-	m_m4Model = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.x), vector3(1.0f, 0.0f, 0.0f));
-	m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.y), vector3(0.0f, 1.0f, 0.0f));
-	m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.z), vector3(0.0f, 0.0f, 1.0f));
-	m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_m4Model));
+	//m_m4Model = glm::rotate(IDENTITY_M4, glm::radians(m_v3Rotation.x), vector3(1.0f, 0.0f, 0.0f));
+	//m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.y), vector3(0.0f, 1.0f, 0.0f));
+	//m_m4Model = glm::rotate(m_m4Model, glm::radians(m_v3Rotation.z), vector3(0.0f, 0.0f, 1.0f));
+	//m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_m4Model));
 
-	//m_qOrientation = m_qOrientation * glm::angleAxis(glm::radians(1.0f), vector3(1.0f));
-	//m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_qOrientation));
+
+	m_m4Model = glm::toMat4(m_qOrientation);
+	//m_pMesh->Render(m4Projection, m4View, m_m4Model);
+	m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_qOrientation));
+
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();

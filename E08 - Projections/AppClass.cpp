@@ -3,7 +3,7 @@ using namespace Simplex;
 void Application::InitVariables(void)
 {
 	//Change this to your name and email
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Berkley Knowles - bnk5901@rit.edu";
 
 	//Set the position and target of the camera
 	//(I'm at [0,0,10], looking at [0,0,0] and up is the positive Y axis)
@@ -52,23 +52,33 @@ void Application::Display(void)
 	case 1:
 		m_pCamera->ResetCamera();
 		break;
-	case 2:
+	case 2: //done
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPerspective(false);
+		m_pCamera->SetPositionTargetAndUpward(vector3( 0.0f, 0.0f, 5.0f), vector3(0.0f, 0.0f, 0.0f), vector3(0.0f, 1.0f, 0.0f));
 		break;
-	case 3:
+	case 3: //done
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(25.0f, 0.0f, 0.0f), vector3(0.0f, 0.0f, 0.0f), vector3(0.0f, 0.0f, -1.0f));
 		break;
-	case 4:
+	case 4: //done
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -15.0f), vector3(0.0f, 0.0f, 0.0f), vector3(0.0f, 1.0f, 0.0f));
 		break;
-	case 5:
+	case 5: //done
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, -10.0f), vector3(0.0f, 0.0f, 0.0f), vector3(0.0f, 1.0f, 0.0f));
+		//m_pCamera->SetPositionTargetAndUpward(AXIS_Z*-10, ZERO_V3,AXIS_Y);
 		break;
-	case 6:
+	case 6: //done
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, 0.000001f), vector3(0.0f, .0f, 0.0f), vector3(0.0f, 1.0f, 0.0f)); 
+		//m_pCamera->SetPositionTargetAndUpward(AXIS_Z* 0.00001f, ZERO_V3, AXIS_Y);
+		m_pCamera->SetPerspective(false);
 		break;
-	case 7:
+	case 7: //done
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, 10.0f), vector3(0.0f, 0.0f, 0.0f), vector3(0.0f, -1.0f, 0.0f));
 		break;
 	}
 

@@ -132,9 +132,7 @@ void Simplex::MyCamera::SetPositionTargetAndUpward(vector3 a_v3Position, vector3
 void Simplex::MyCamera::CalculateViewMatrix(void)
 {
 	//Calculate the lookAt; most of your assignment will be reflected in this method
-	m_m4View = glm::lookAt(m_v3Position, m_v3Position + AXIS_Z, glm::normalize(m_v3Above - m_v3Position)); //position, target, upward
-	
-
+	m_m4View = glm::lookAt(m_v3Position, m_v3Target, glm::normalize(m_v3Above - m_v3Position)); //position, target, upward
 }
 
 void Simplex::MyCamera::CalculateProjectionMatrix(void)
@@ -155,13 +153,15 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 void MyCamera::MoveForward(float a_fDistance)
 {
 	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	vector4 transformed = vector4(0.0f, 0.0f, -a_fDistance, 0.0f) * m_m4View;
+	m_v3Position += vector3(transformed.x, transformed.y, transformed.z);
+	//m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
+	m_v3Above += vector3(transformed.x, transformed.y, transformed.z);
 }
 
 void MyCamera::MoveVertical(float a_fDistance)
 {
+	vector4 transformed = vector4(0.0f, -a_fDistance, 0.0f, 0.0f) * m_m4View;
 	m_v3Position += vector3(0.0f, -a_fDistance, 0.0f);
 	m_v3Target += vector3(0.0f, -a_fDistance, 0.0f);
 	m_v3Above += vector3(0.0f, -a_fDistance, 0.0f);
@@ -169,8 +169,8 @@ void MyCamera::MoveVertical(float a_fDistance)
 
 void MyCamera::MoveSideways(float a_fDistance)
 {
-	vector4 transformed = vector4(0.0f, 0.0f, -a_fDistance, 0.0f) * m_m4View;
+	//vector4 transformed = vector4(-a_fDistance, 0.0f, 0.0f, 0.0f) * m_m4View;
 	m_v3Position += vector3(-a_fDistance, 0.0f, 0.0f);
-	//m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f);
+	m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f);
 	m_v3Above += vector3(-a_fDistance, 0.0f, 0.0f);
 }//Needs to be defined

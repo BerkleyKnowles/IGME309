@@ -369,6 +369,10 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
+
+	//m_pCamera->ChangePitch(fAngleX);
+	//m_pCamera->ChangeYaw(fAngleY);
+	m_pCamera->SetTarget(vector3(m_pCamera->GetTarget().x + fAngleY, m_pCamera->GetTarget().y + fAngleX, 0.0f));
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 	
 }
@@ -387,9 +391,9 @@ void Application::ProcessKeyboard(void)
 	if (fMultiplier)
 		fSpeed *= 5.0f;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		m_pCamera->MoveForward(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		m_pCamera->MoveSideways(fSpeed);
@@ -416,7 +420,7 @@ void Application::ProcessJoystick(void)
 
 	bool fMultiplier = m_pController[m_uActCont]->button[SimplexKey_L1] ||
 		m_pController[m_uActCont]->button[SimplexKey_R1];
-
+	
 	if (fMultiplier)
 	{
 		fForwardSpeed *= 3.0f;

@@ -28,6 +28,13 @@ class MyCamera
 
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
+
+	quaternion m_MainCamera;
+	quaternion m_Yaw;
+	quaternion m_Pitch;
+	quaternion m_Reset;
+
+
 public:
 	/*
 	USAGE: Constructor
@@ -223,13 +230,15 @@ public:
 	ARGUMENTS: float a_fDistance = 0.1f -> amount of movement
 	OUTPUT: ---
 	*/
-	void MoveVertical(float a_fDistance = 0.1f);
+	void MoveVertical(float a_fYaw = 0.1f);
 	/*
 	USAGE: Translates the camera right or left
 	ARGUMENTS: float a_fDistance = 0.1f -> amount of movement
 	OUTPUT: ---
 	*/
-	void MoveSideways(float a_fDistance = 0.1f);
+	void MoveSideways(float a_fPitch = 0.1f);
+	void ChangeYaw(float a_fSpeed);
+	void ChangePitch(float a_fSpeed);
 };
 
 } //namespace Simplex

@@ -131,8 +131,17 @@ void Simplex::MyCamera::SetPositionTargetAndUpward(vector3 a_v3Position, vector3
 
 void Simplex::MyCamera::CalculateViewMatrix(void)
 {
-	//Calculate the lookAt; most of your assignment will be reflected in this method
+	//Calculate the lookAt~~~~~~~~~~~~	
+	m_v3Target = m_v3Position + AXIS_Z; //moves the target to the new postion along z axis
+
+	m_MainCamera = m_Yaw * m_Pitch * m_MainCamera; //updates camera
+
 	m_m4View = glm::lookAt(m_v3Position, m_v3Target, glm::normalize(m_v3Above - m_v3Position)); //position, target, upward
+	m_m4View = glm::mat4_cast(m_MainCamera) * m_m4View; //multipled to update rotation
+
+	//reseting yaw and pitch to avoid infinite spinning
+	m_Yaw = m_Reset;
+	m_Pitch = m_Reset;
 }
 
 void Simplex::MyCamera::CalculateProjectionMatrix(void)
@@ -150,27 +159,51 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
+
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	vector4 transformed = vector4(0.0f, 0.0f, -a_fDistance, 0.0f) * m_m4View;
+	//calculates the change of the camera and input
+	vector4 transformed = vector4(0.0f, 0.0f, -a_fDistance, 0.0f) * m_m4View; // change in the z direction
+
+	//moves position and above based on the transformed
 	m_v3Position += vector3(transformed.x, transformed.y, transformed.z);
-	//m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
 	m_v3Above += vector3(transformed.x, transformed.y, transformed.z);
 }
 
 void MyCamera::MoveVertical(float a_fDistance)
 {
-	vector4 transformed = vector4(0.0f, -a_fDistance, 0.0f, 0.0f) * m_m4View;
-	m_v3Position += vector3(0.0f, -a_fDistance, 0.0f);
-	m_v3Target += vector3(0.0f, -a_fDistance, 0.0f);
-	m_v3Above += vector3(0.0f, -a_fDistance, 0.0f);
-}//Needs to be defined
+	//calculates the change of the camera and input
+	vector4 transformed = vector4(0.0f, -a_fDistance, 0.0f, 0.0f) * m_m4View; //change in the y direction
+
+	//moves position and above based on the transformed
+	m_v3Position += vector3(transformed.x, transformed.y, transformed.z);
+	m_v3Above += vector3(transformed.x, transformed.y, transformed.z);
+}
 
 void MyCamera::MoveSideways(float a_fDistance)
 {
-	//vector4 transformed = vector4(-a_fDistance, 0.0f, 0.0f, 0.0f) * m_m4View;
-	m_v3Position += vector3(-a_fDistance, 0.0f, 0.0f);
-	m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f);
-	m_v3Above += vector3(-a_fDistance, 0.0f, 0.0f);
-}//Needs to be defined
+	//calculates the change of the camera and input
+	vector4 transformed = vector4(-a_fDistance, 0.0f, 0.0f, 0.0f) * m_m4View; // change in the x direction
+
+	//moves position and above based on the transformed
+	m_v3Position += vector3(transformed.x, transformed.y, transformed.z);
+	m_v3Above += vector3(transformed.x, transformed.y, transformed.z);
+}
+
+
+//helper methods~~~~~~~~~~~~~~~~~~~~~~~
+//allows to grab the angle values calcuated in AppClassControls for right click mouse movement
+
+//void ChangeYaw~~~~~~~~
+//sets the Yaw (Y axis rotation) based on the called in angle from mouse movement
+void MyCamera::ChangeYaw(float a_fSpeed)
+{
+	m_Yaw = quaternion(vector3(0.0f, glm::radians(a_fSpeed), 0.0f)) * m_Yaw; //multipled by self to update
+}
+
+//void ChangePitch~~~~~~
+//sets the Pitch (X axis rotation) based on the called in angle from mouse movement
+void MyCamera::ChangePitch(float a_fSpeed)
+{
+	m_Pitch = quaternion(vector3(glm::radians(a_fSpeed), 0.0f, 0.0f)) * m_Pitch; //multiplied by self to update
+}

@@ -1,3 +1,4 @@
+
 #include "AppClass.h"
 using namespace Simplex;
 //Mouse
@@ -370,9 +371,9 @@ void Application::CameraRotation(float a_fSpeed)
 	}
 	//Change the Yaw and the Pitch of the camera
 
-	//m_pCamera->ChangePitch(fAngleX);
-	//m_pCamera->ChangeYaw(fAngleY);
-	m_pCamera->SetTarget(vector3(m_pCamera->GetTarget().x + fAngleY, m_pCamera->GetTarget().y + fAngleX, 0.0f));
+	m_pCamera->ChangePitch(fAngleX * 1.5f);
+	m_pCamera->ChangeYaw(fAngleY * 1.5f);
+	//m_pCamera->SetTarget(vector3(m_pCamera->GetTarget().x + fAngleY, m_pCamera->GetTarget().y + fAngleX, 0.0f));
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 	
 }

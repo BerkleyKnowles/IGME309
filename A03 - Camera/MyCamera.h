@@ -29,11 +29,30 @@ class MyCamera
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
 
-	quaternion m_MainCamera;
-	quaternion m_Yaw;
-	quaternion m_Pitch;
-	quaternion m_Reset;
 
+	//additional things added to MyCamera~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	//creating direction normals for the location of the camera
+	vector3 m_v3Foward = glm::normalize(vector3(m_v3Target - m_v3Position)); //gives the forward direction
+	vector3 m_v3Upward = glm::normalize(m_v3Above); //gives the upward direction
+	vector3 m_v3Rightward = glm::normalize(glm::cross(m_v3Foward, m_v3Upward)); //gives the right direction
+
+	// \           | 1 upward
+	//    \        |
+	//       \     |
+	//          \  |
+	//----------Camera ->-------------- 1 forward
+	//             | \
+	//             |    \
+	//             |       \
+	//             |          \ 1 right
+
+
+	//quaternions for calculating yaw and pitch
+	quaternion m_MainCamera; //main quat
+	quaternion m_Yaw; //y axis
+	quaternion m_Pitch; //x axis
+	quaternion m_Reset; //basis value to reset the others
 
 public:
 	/*

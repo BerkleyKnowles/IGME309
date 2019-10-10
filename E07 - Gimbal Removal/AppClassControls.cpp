@@ -377,8 +377,7 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
-	m_pCameraMngr->ChangeYaw(fAngleY * 3.0f);
-	m_pCameraMngr->ChangePitch(-fAngleX * 3.0f);
+	m_pCameraMngr->ChangeMainCamera(fAngleX, fAngleY);
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -402,11 +401,11 @@ void Application::ProcessKeyboard(void)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCameraMngr->MoveForward(-fSpeed);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		m_pCameraMngr->MoveSideways(-fSpeed);
-
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		m_pCameraMngr->MoveSideways(fSpeed);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		m_pCameraMngr->MoveSideways(-fSpeed);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		m_pCameraMngr->MoveVertical(-fSpeed);

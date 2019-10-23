@@ -297,7 +297,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	}
 
 	//compute translation vector t
-	vector4 t = vector4(a_pOther->GetCenterGlobal()- GetCenterGlobal(), 1.0f);
+	vector4 t = vector4(a_pOther->GetCenterGlobal() - GetCenterGlobal(), 1.0f);
 	//bring it into a's coord frame
 	t = vector4(glm::dot(t, vector4(GetModelMatrix()[0]) * vector4(AXIS_X, 0.0f)),
 				glm::dot(t, vector4(GetModelMatrix()[1]) * vector4(AXIS_Y, 0.0f)),			//this is were the book error was, fixed here
@@ -313,37 +313,26 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	for (uint i = 0; i < 3; i++) {
 		ra = GetHalfWidth()[i];
 		rb = a_pOther->GetHalfWidth()[0] * AbsR[i][0] + a_pOther->GetHalfWidth()[1] * AbsR[i][1] + a_pOther->GetHalfWidth()[2] * AbsR[i][2];
+		
+		if (abs(t[i]) > ra + rb)
+		{
+			return 1; 
+		}
 	}
-	if (abs(t[0]) > ra + rb)
-	{
-		return eSATResults::SAT_AX;
-	}
-	else if (abs(t[1]) > ra + rb)
-	{
-		return eSATResults::SAT_AY;
-	}
-	else if (abs(t[2]) > ra + rb)
-	{
-		return eSATResults::SAT_AZ;
-	}
+
+
 
 	// Test axes L = B0, L = B1, L = B2
 	for (uint i = 0; i < 3; i++) {
 		ra = GetHalfWidth()[0] * AbsR[0][i] + GetHalfWidth()[1] * AbsR[1][i] + GetHalfWidth()[2] * AbsR[2][i];
 		rb = a_pOther->GetHalfWidth()[i];
+
+		if (abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb)
+		{
+			return 1;
+		}
 	}
-	if (abs(t[0] * R[0][0] + t[1] * R[1][0] + t[2] * R[2][0]) > ra + rb)
-	{
-		return eSATResults::SAT_BX;
-	}
-	else if (abs(t[0] * R[0][1] + t[1] * R[1][1] + t[2] * R[2][1]) > ra + rb)
-	{
-		return eSATResults::SAT_BY;
-	}
-	else if (abs(t[0] * R[0][2] + t[1] * R[1][2] + t[2] * R[2][2]) > ra + rb)
-	{
-		return eSATResults::SAT_BZ;
-	}
+
 
 
 	// Test axis L = A0 x B0

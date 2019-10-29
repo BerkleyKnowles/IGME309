@@ -297,12 +297,11 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	}
 
 	//compute translation vector t
-	vector4 t = vector4(a_pOther->GetCenterGlobal() - GetCenterGlobal(), 1.0f);
+	vector3 t = vector3(a_pOther->GetCenterGlobal() - GetCenterGlobal());
 	//bring it into a's coord frame
-	t = vector4(glm::dot(t, vector4(GetModelMatrix()[0]) * vector4(AXIS_X, 0.0f)),
-				glm::dot(t, vector4(GetModelMatrix()[1]) * vector4(AXIS_Y, 0.0f)),			//this is were the book error was, fixed here
-				glm::dot(t, vector4(GetModelMatrix()[2]) * vector4(AXIS_Z, 0.0f)),
-				0.0f); 
+	t = vector3(glm::dot(t, vector3(GetModelMatrix()[0])),
+				glm::dot(t, vector3(GetModelMatrix()[1])),			//this is were the book error was, fixed here
+				glm::dot(t, vector3(GetModelMatrix()[2]))); 
 
 	for (uint i = 0; i < 3; i++)
 		for (uint j = 0; j < 3; j++)

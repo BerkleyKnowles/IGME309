@@ -64,7 +64,10 @@ MyEntityManager::~MyEntityManager(){Release();};
 // other methods
 void Simplex::MyEntityManager::Update(void)
 {
-
+	//take it all, send rigid body to entity manager, then check everythin there
+	//generate and handle the entities themselves
+	//handle the model and worries of collisions
+	//
 }
 void Simplex::MyEntityManager::AddEntity(String a_sFileName, String a_sUniqueID)
 {

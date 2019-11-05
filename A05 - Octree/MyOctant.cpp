@@ -12,6 +12,8 @@ uint MyOctant::m_uIdealEntityCount = 5;
 
 MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 {
+	m_uMaxLevel = a_nMaxLevel;
+	m_uIdealEntityCount = a_nIdealEntityCount;
 
 }
 
@@ -22,15 +24,23 @@ MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 
 MyOctant::MyOctant(MyOctant const& other)
 {
+
 }
 
 MyOctant& Simplex::MyOctant::operator=(MyOctant const& other)
 {
-	// TODO: insert return statement here
+	
 }
 
 MyOctant::~MyOctant(void)
 {
+	//for (int i = 0; i < m_pChild; i++)
+	//{
+
+	//}
+	delete m_pRoot;
+	m_pRoot = nullptr;
+	
 }
 
 void MyOctant::Swap(MyOctant& other)

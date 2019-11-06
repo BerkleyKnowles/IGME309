@@ -172,7 +172,7 @@ void MyOctant::Display(uint a_nIndex, vector3 a_v3Color) //done?
 
 	if (m_uID == a_nIndex) //if its the right index render it
 	{
-		m_pMeshMngr->AddCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)), a_v3Color, RENDER_WIRE);
+		m_pMeshMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)), a_v3Color, RENDER_WIRE);
 		return;
 	}
 	for (int i = 0; i < m_uChildren; i++) //if not, go through all of them recursively
@@ -187,7 +187,7 @@ void MyOctant::Display(vector3 a_v3Color) //done
 	{
 		m_pChild[i]->Display(a_v3Color); //recursion to cover all octants
 	}
-	m_pMeshMngr->AddCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)),a_v3Color, RENDER_WIRE); //renders with proper size and location on screen
+	m_pMeshMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)),a_v3Color, RENDER_WIRE); //renders with proper size and location on screen
 }
 
 void MyOctant::DisplayLeafs(vector3 a_v3Color) //done
@@ -197,7 +197,7 @@ void MyOctant::DisplayLeafs(vector3 a_v3Color) //done
 		m_pChild[i]->Display(a_v3Color); //recursion to cover all octants
 	}
 	if(IsLeaf())//only adds to render list if childless
-		m_pMeshMngr->AddCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)), a_v3Color, RENDER_WIRE); //renders with proper size and location on screen
+		m_pMeshMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)), a_v3Color, RENDER_WIRE); //renders with proper size and location on screen
 }
 
 void MyOctant::ClearEntityList(void) //done
@@ -258,6 +258,14 @@ void MyOctant::Subdivide(void) //done
 	//[7] octant 8 - back right
 	v3Center.x += fSizeDoub;
 	m_pChild[7] = new MyOctant(v3Center, fSizeDoub);
+
+	for (int i = 0; i < 8; i++)
+	{
+		m_pChild[i]->m_pParent = this;
+		m_pChild[i]->m_uLevel = m_uLevel++;
+		if (m_pChild[i]->ContainsMoreThan(m_uIdealEntityCount))
+			m_pChild[i]->Subdivide();
+	}
 }
 
 MyOctant* MyOctant::GetChild(uint a_nChild) //done

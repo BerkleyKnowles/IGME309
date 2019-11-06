@@ -32,6 +32,7 @@ private:
 	bool m_bGUI_Console = true; //show Credits GUI window?
 	bool m_bGUI_Test = false; //show Test GUI window?
 	bool m_bGUI_Controller = false; //show Controller GUI window?
+	bool m_GUI_Octree = true;
 
 	uint m_uRenderCallCount = 0; //count of render calls per frame
 	uint m_uControllerCount = 0; //count of controllers connected
@@ -61,6 +62,7 @@ private:
 	sf::SoundBuffer m_soundBuffer; //buffer to play sound from
 	sf::Sound m_sound; //sound effect
 	sf::Music m_soundBGM; //background music
+
 
 public:
 #pragma region Constructor / Run / Destructor

@@ -2,7 +2,7 @@
 using namespace Simplex;
 void Application::InitVariables(void)
 {
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Berkley Knowles - bnk5901@rit.edu";
 
 	//Set the position and target of the camera
 	m_pCameraMngr->SetPositionTargetAndUpward(
@@ -26,7 +26,6 @@ void Application::InitVariables(void)
 		m_pEntityMngr->SetModelMatrix(m4Position * glm::scale(vector3(1.5f)));
 		m_pEntityMngr->UsePhysicsSolver(true);
 		m_pEntityMngr->SetMass(1.5);
-
 		//m_pEntityMngr->SetMass(i+1);
 	}
 }

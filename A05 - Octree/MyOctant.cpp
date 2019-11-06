@@ -10,30 +10,31 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount) //root creator, d
 {
 	Init();
 
-	m_pRoot = this;
 	m_uOctantCount = 0; //ensures it was zero before hand
 	m_uID = m_uOctantCount;
 	m_uMaxLevel = a_nMaxLevel;
 	m_uIdealEntityCount = a_nIdealEntityCount;
+	m_pRoot = this;
+	m_lChild.clear();
 
 	//everything below is for getting max, min, and center values for the octant
-	std::vector<vector3> m_lMaxMinList;
+	std::vector<vector3> RigidBodyList;
 	uint entityCount = m_pEntityMngr->GetEntityCount(); //all entities on screen
 	for (uint i = 0; i < entityCount; i++)
 	{
-		MyEntity* entityTemp = m_pEntityMngr->GetEntity();
+		MyEntity* entityTemp = m_pEntityMngr->GetEntity(i);
 		MyRigidBody* rigidBodyTemp = entityTemp->GetRigidBody();
-		m_lMaxMinList.push_back(rigidBodyTemp->GetMinGlobal());
-		m_lMaxMinList.push_back(rigidBodyTemp->GetMaxGlobal());
+		RigidBodyList.push_back(rigidBodyTemp->GetMinGlobal());
+		RigidBodyList.push_back(rigidBodyTemp->GetMaxGlobal());
 	}
-	MyRigidBody* RigidBodyTemp = new MyRigidBody(m_lMaxMinList);
+	MyRigidBody* RigidBodyTemp = new MyRigidBody(RigidBodyList);
 	vector3 v3HalfWidth = RigidBodyTemp->GetHalfWidth();
 
 	m_v3Center = RigidBodyTemp->GetCenterLocal(); //sets center
 
 	//these are no longer needed
 	SafeDelete(RigidBodyTemp);
-	m_lMaxMinList.clear(); 
+	RigidBodyList.clear();
 
 	float fMax = v3HalfWidth.x;
 	for (int i = 0; i < 3; i++) //gets the max value of the halfwidths
@@ -42,8 +43,8 @@ MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount) //root creator, d
 			fMax = v3HalfWidth[i];
 	}
 
-	//gottem
-	m_fSize = fMax * 2;
+	//gets the min and max from the size and center
+	m_fSize = fMax * 2.0f;
 	m_v3Max = m_v3Center + vector3(fMax);
 	m_v3Min = m_v3Center - vector3(fMax);
 
@@ -56,29 +57,24 @@ MyOctant::MyOctant(vector3 a_v3Center, float a_fSize) //done
 	Init();
 	m_v3Center = a_v3Center;
 	m_fSize = a_fSize;
-	m_v3Max = m_v3Center + vector3(m_fSize/2);
-	m_v3Min = m_v3Center - vector3(m_fSize/2);
+	m_v3Max = m_v3Center + (vector3(m_fSize) / 2.0f);
+	m_v3Min = m_v3Center - (vector3(m_fSize) / 2.0f);
 	m_uOctantCount++;
-
 }
 
 MyOctant::MyOctant(MyOctant const& other) //done?
 {
-	this->m_EntityList = other.m_EntityList;
 	this->m_fSize = other.m_fSize;
 	this->m_lChild = other.m_lChild;
 	for (int i = 0; i < 8; i++)
 	{
-		m_pChild[i] = other.m_pChild[i];
+		this->m_pChild[i] = other.m_pChild[i];
 	}
 	this->m_pParent = other.m_pParent;
 	this->m_pRoot = other.m_pRoot;
 	this->m_uChildren = other.m_uChildren;
 	this->m_uID = other.m_uID;
-	this->m_uIdealEntityCount = other.m_uIdealEntityCount;
 	this->m_uLevel = other.m_uLevel;
-	this->m_uMaxLevel = other.m_uMaxLevel;
-	this->m_uOctantCount = other.m_uOctantCount;
 	this->m_v3Center = other.m_v3Center;
 	this->m_v3Max = other.m_v3Max;
 	this->m_v3Min = other.m_v3Min;
@@ -147,7 +143,7 @@ vector3 MyOctant::GetMaxGlobal(void)
 bool MyOctant::IsColliding(uint a_uRBIndex) //done
 {
 	uint entityCount = m_pEntityMngr->GetEntityCount();
-	if (entityCount <= a_uRBIndex)
+	if (a_uRBIndex >= entityCount)
 		return false;
 	
 	//aabb checking basically
@@ -157,11 +153,20 @@ bool MyOctant::IsColliding(uint a_uRBIndex) //done
 	vector3 entityMax = rigidBodyTemp->GetMaxGlobal();
 	vector3 entityMin = rigidBodyTemp->GetMinGlobal();
 
-	if (entityMin.x > m_v3Max.x || entityMax.x < m_v3Min.x) //x check
+	//x check
+	if (entityMin.x > m_v3Max.x)
 		return false;
-	if (entityMin.y > m_v3Max.y || entityMax.y < m_v3Min.y) //y check
+	if (entityMax.x < m_v3Min.x) 
 		return false;
-	if (entityMin.z > m_v3Max.z || entityMax.z < m_v3Min.z) //z check
+	//y check
+	if (entityMin.y > m_v3Max.y)
+		return false;
+	if (entityMax.y < m_v3Min.y) 
+		return false;
+	//z check
+	if (entityMin.z > m_v3Max.z)
+		return false;
+	if (entityMax.z < m_v3Min.z) 
 		return false;
 
 	return true;
@@ -192,11 +197,10 @@ void MyOctant::Display(vector3 a_v3Color) //done
 
 void MyOctant::DisplayLeafs(vector3 a_v3Color) //done
 {
-	for (int i = 0; i < m_uChildren; i++)
+	for (int i = 0; i < m_lChild.size(); i++)
 	{
-		m_pChild[i]->Display(a_v3Color); //recursion to cover all octants
+		m_pChild[i]->DisplayLeafs(a_v3Color); //recursion through all octants down to leaves
 	}
-	if(IsLeaf())//only adds to render list if childless
 		m_pMeshMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)), a_v3Color, RENDER_WIRE); //renders with proper size and location on screen
 }
 
@@ -212,7 +216,7 @@ void MyOctant::ClearEntityList(void) //done
 void MyOctant::Subdivide(void) //done
 {
 	//intial checks: have we reached max level or is it a parent?
-	if (m_uLevel == m_uMaxLevel || m_uChildren != 0)
+	if (m_uLevel >= m_uMaxLevel || m_uChildren != 0)
 		return;
 
 	//if not, Congradulations! This Octant is now a parent! plus 8 kids!
@@ -261,8 +265,9 @@ void MyOctant::Subdivide(void) //done
 
 	for (int i = 0; i < 8; i++)
 	{
+		m_pChild[i]->m_pRoot = m_pRoot;
 		m_pChild[i]->m_pParent = this;
-		m_pChild[i]->m_uLevel = m_uLevel++;
+		m_pChild[i]->m_uLevel = m_uLevel + 1;
 		if (m_pChild[i]->ContainsMoreThan(m_uIdealEntityCount))
 			m_pChild[i]->Subdivide();
 	}
@@ -270,6 +275,8 @@ void MyOctant::Subdivide(void) //done
 
 MyOctant* MyOctant::GetChild(uint a_nChild) //done
 {
+	if (a_nChild > 7) //cant exceed 8 kids
+		return nullptr;
 	return m_pChild[a_nChild];
 }
 
@@ -291,7 +298,7 @@ bool MyOctant::ContainsMoreThan(uint m_nEntities) //done
 	int entityCount = m_pEntityMngr->GetEntityCount();
 	for (int i = 0; i < entityCount; i++)
 	{
-		if (IsColliding(i))
+		if (IsColliding(i)) //counts how many entities are in the octant
 			counter++;
 		if(counter > m_nEntities)
 			return true;
@@ -299,25 +306,21 @@ bool MyOctant::ContainsMoreThan(uint m_nEntities) //done
 	return false;
 }
 
-void MyOctant::KillBranches(void) //done?
+void MyOctant::KillBranches(void) //done
 {
 
 	for (int i = 0; i < m_uChildren; i++)
 	{
-		if (!m_pChild[i]->IsLeaf())
-			m_pChild[i]->KillBranches();
-		else 
-		{
-			delete m_pChild[i];
-			m_pChild[i] = nullptr;
-		}
+		m_pChild[i]->KillBranches(); //recursion to kill everything in tree
+		delete m_pChild[i];
+		m_pChild[i] = nullptr;
 	}
 	m_uChildren = 0;
 }
 
 void MyOctant::ConstructTree(uint a_nMaxLevel) //done
 {
-	if (a_nMaxLevel != 0)
+	if (m_uLevel != 0)
 		return;
 	m_uMaxLevel = a_nMaxLevel;
 	m_uOctantCount = 1;
@@ -330,7 +333,7 @@ void MyOctant::ConstructTree(uint a_nMaxLevel) //done
 	ConstructList();
 }
 
-void MyOctant::AssignIDEntity(void) //not sure if right
+void MyOctant::AssignIDEntity(void) //done
 {
 	for (int i = 0; i < m_uChildren; i++)
 	{
@@ -363,7 +366,7 @@ void MyOctant::Release(void) //done
 	}
 	m_fSize = 0.0f;
 	m_uChildren = 0;
-	ClearEntityList();
+	m_EntityList.clear();
 	m_lChild.clear();
 
 }

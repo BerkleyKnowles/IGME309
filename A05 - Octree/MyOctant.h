@@ -72,13 +72,13 @@ namespace Simplex
 		bool IsColliding(uint a_uRBIndex);
 		//checks for collision with entity at index input from bounding object manager
 
-		void Display(uint a_nIndex, vector3 a_v3Color = C_RED);
+		void Display(uint a_nIndex, vector3 a_v3Color = C_YELLOW);
 		//displays MyOctant volume specified by index, incuding objects underneath
 
-		void Display(vector3 a_v3Color = C_RED);
+		void Display(vector3 a_v3Color = C_YELLOW);
 		//displays MyOctant volume in color here
 
-		void DisplayLeafs(vector3 a_v3Color = C_RED);
+		void DisplayLeafs(vector3 a_v3Color = C_YELLOW);
 		//displays non-empty leaves
 
 		void ClearEntityList(void);
@@ -108,7 +108,7 @@ namespace Simplex
 		//creates a tree with subdivs, max num of objs and lvls
 
 		void AssignIDEntity(void);
-		//traverse treen and set objects into the index
+		//traverse tree and set objects into the index
 
 		uint GetOctantCount(void);
 		//gets total num of octants in world

@@ -45,7 +45,7 @@ int Simplex::MyEntityManager::GetEntityIndex(String a_sUniqueID)
 	return -1;
 }
 //Accessors
-Simplex::uint Simplex::MyEntityManager::GetEntityCount(void) {	return 0; } //m_uEntityCount THIS BE BROKEN
+Simplex::uint Simplex::MyEntityManager::GetEntityCount(void) {	return m_uEntityCount; }
 Simplex::Model* Simplex::MyEntityManager::GetModel(uint a_uIndex)
 {
 	//if the list is empty return
